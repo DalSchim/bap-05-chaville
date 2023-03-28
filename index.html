@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
+
+    <title>Document</title>
+</head>
+<style>
+    #container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: center;
+        height: 500px;
+    }
+
+    .dropzone {
+        border: 2px dashed gray;
+        width: 300px;
+        height: 100px;
+        margin: 10px;
+        padding: 10px;
+        text-align: center;
+        font-size: 20px;
+        background-color: #eee;
+    }
+
+    .draggable {
+        display: inline-block;
+        border: 2px solid black;
+        padding: 5px;
+        margin: 10px;
+        cursor: move;
+        background-color: white;
+    }
+</style>
+
+<body>
+<h1>Jeu de phrases à compléter</h1>
+<div id="questions"></div>
+<button id="submit">Valider</button>
+
+<script>
+    var questions = [    {        sentence: "Je _______________ du pain.",        answer: "mange"    },    {        sentence: "Le chat _______________ sur le canapé.",        answer: "dort"    },    {        sentence: "Nous _______________ à la plage.",        answer: "allons"    }];
+
+    var container = document.getElementById("questions");
+    var submit = document.getElementById("submit");
+
+    // Boucle pour créer les éléments HTML pour chaque question
+
+
+    for (var i = 0; i < questions.length; i++) {
+        var question = questions[i];
+        var div = document.createElement("div");
+        var sentence = document.createElement("p");
+        var dropzone = document.createElement("div");
+        var draggable = document.createElement("div");
+        var answer = question.answer;
+
+        sentence.textContent = question.sentence;
+        dropzone.classList.add("dropzone");
+        draggable.classList.add("draggable");
+        draggable.setAttribute("draggable", "true");
+        draggable.textContent = answer;
+
+        div.appendChild(sentence);
+        div.appendChild(dropzone);
+        div.appendChild(draggable);
+        container.appendChild(div);
+
+        // Événements pour les éléments de chaque question
+        draggable.addEventListener("dragstart", function(event) {
+            event.dataTransfer.setData("text/plain", event.target.id);
+        });
+
+        dropzone.addEventListener("dragover", function(event) {
+            event.preventDefault();
+        });
+
+        dropzone.addEventListener("drop", function(event) {
+            event.preventDefault();
+            var data = event.dataTransfer.getData("text/plain");
+            var draggableElement = document.getElementById(data);
+            var dropzone = event.target;
+            dropzone.appendChild(draggableElement);
+        });
+    }
+
+    // Événement pour valider les réponses
+    submit.addEventListener("click", function(event) {
+        var correctAnswers = 0;
+
+        for (var i = 0; i < questions.length; i++) {
+            var question = questions[i];
+            var dropzone = container.querySelectorAll(".dropzone")[i];
+            var answer = question.answer;
+
+            if (dropzone.textContent.trim() === answer) {
+                correctAnswers++;
+            }
+        }
+
+        if (correctAnswers === questions.length) {
+            alert("Bravo, vous avez trouvé toutes les bonnes réponses !");
+        }
+    });
+
+</script>
+
+</body>
+</html>
